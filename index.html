@@ -111,6 +111,91 @@ img{max-width:100%;height:auto}
   .rank{width:18px}
 }
 </style>
+
+<style id="feedback-enhancements">
+/* Feedback enhancements: readability, compact song snapshots, decorations */
+.visitor .title p,
+.visitor .note,
+.visitor th,
+.visitor .metric small,
+.visitor .about-card p{color:#3f342f}
+.visitor .tablewrap{background:#fffdf9}
+.visitor td{border-bottom-color:#1112}
+.visitor tbody tr:hover{background:#11110a10}
+.visitor .metric{background:#fffdf9}
+.visitor .metric b{color:#111}
+.visitor .positive{color:#175d36!important}
+.visitor .negative{color:#962d38!important}
+
+/* Make song titles clearly interactive without removing the existing table */
+.track-button{
+  appearance:none;border:0;background:none;color:inherit;font:inherit;font-weight:800;
+  text-align:left;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  max-width:100%;
+}
+.track-button::after{
+  content:'↗';font:11px 'DM Mono';opacity:.45;transition:.18s;
+}
+.track-button:hover{color:var(--accent2)}
+.track-button:hover::after{opacity:1;transform:translate(2px,-2px)}
+.track-button:focus-visible{outline:2px solid var(--accent2);outline-offset:4px;border-radius:4px}
+
+/* Compact screenshot-friendly song snapshot */
+.song-snapshot{
+  display:none;margin:20px 0 0;padding:18px;border:3px solid var(--ink);
+  border-radius:20px;background:var(--table);box-shadow:7px 7px 0 var(--shadow);
+}
+.song-snapshot.open{display:block;animation:snapshotIn .18s ease-out}
+@keyframes snapshotIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.snapshot-grid{display:grid;grid-template-columns:92px 1fr auto;gap:16px;align-items:center}
+.snapshot-art{
+  width:92px;height:92px;border:3px solid var(--ink);border-radius:14px;
+  background:linear-gradient(140deg,var(--accent),var(--accent2)) center/cover;
+  box-shadow:5px 5px 0 var(--shadow);
+}
+.snapshot-copy h3{margin:0 0 5px;font-size:22px;line-height:1;letter-spacing:-1px}
+.snapshot-copy p{margin:0;color:var(--mute);font:10px 'DM Mono';text-transform:uppercase}
+.snapshot-stats{display:grid;grid-template-columns:repeat(4,minmax(86px,1fr));gap:7px;margin-top:12px}
+.snapshot-stat{padding:9px 10px;border:2px solid var(--ink);border-radius:9px;background:var(--card)}
+.snapshot-stat small{display:block;color:var(--mute);font:8px 'DM Mono';text-transform:uppercase}
+.snapshot-stat b{display:block;margin-top:3px;font-size:13px}
+.snapshot-close{
+  align-self:start;border:2px solid var(--ink);background:transparent;color:var(--ink);
+  border-radius:50%;width:30px;height:30px;cursor:pointer;font-weight:800;
+}
+.snapshot-close:hover{transform:rotate(8deg)}
+
+/* Small playful decorative details */
+.card{position:relative;overflow:visible}
+.card::before,.card::after{
+  position:absolute;pointer-events:none;font-family:Georgia,serif;font-weight:800;
+}
+.card::before{content:'✦';top:-18px;right:34px;font-size:24px;color:var(--accent2);transform:rotate(12deg)}
+.card::after{content:'♡';bottom:-18px;left:26px;font-size:25px;color:var(--accent);transform:rotate(-10deg)}
+.about-card{position:relative;overflow:hidden}
+.about-card::after{
+  content:'✦  ˚  ✧';position:absolute;right:18px;bottom:12px;font:18px Georgia,serif;
+  color:var(--accent2);opacity:.55;transform:rotate(-7deg);pointer-events:none;
+}
+.snapshot-tip{
+  margin:10px 0 0;color:var(--mute);font:9px 'DM Mono';text-transform:uppercase;
+  letter-spacing:.35px;
+}
+@media(max-width:800px){
+  .snapshot-grid{grid-template-columns:70px 1fr 30px;gap:11px}
+  .snapshot-art{width:70px;height:70px;border-radius:11px}
+  .snapshot-copy h3{font-size:17px}
+  .snapshot-stats{grid-template-columns:repeat(2,1fr)}
+  .song-snapshot{padding:12px;border-radius:15px}
+}
+@media(max-width:440px){
+  .snapshot-grid{grid-template-columns:60px 1fr 28px}
+  .snapshot-art{width:60px;height:60px}
+  .snapshot-copy h3{font-size:15px}
+  .snapshot-stat{padding:8px}
+  .snapshot-stat b{font-size:11px}
+}
+</style>
 </head><body class="general"><header class="shell nav"><a class="brand" href="#">sienna<i>update</i>hq</a><nav class="links"><a href="#">Home</a><a href="#about">About Sienna</a><a href="#archive">Archive</a><a href="#credits">Credits</a></nav><span class="status">STREAMING ARCHIVE</span></header><main class="shell"><section class="hero"><div><div class="kicker">SIENNA SPIRO · SPOTIFY STREAMS</div><h1>Every stream.<br>In context.</h1><p>Daily streaming figures for the complete catalogue, the DELUXE edition of <i>VISITOR</i>, and <i>SINK NOW, SWIM LATER</i>.</p></div><div class="dates"><div>DATA DATE <b>24 AUG 2026</b></div><div>LAST UPDATED <b>25 AUG 2026</b></div></div></section>
 <section class="about-section" id="about">
   <div class="about-grid">
@@ -177,7 +262,25 @@ img{max-width:100%;height:auto}
     </aside>
   </div>
 </section>
-<section class="tabs" id="archive"><button class="tab active" data-view="general"><small>VIEW 01</small><b>General</b></button><button class="tab" data-view="visitor"><small>VIEW 02 · ALBUM</small><b>VISITOR (DELUXE)</b></button><button class="tab" data-view="sink"><small>VIEW 03 · EP</small><b>SINK NOW, SWIM LATER</b></button></section><section class="card"><div class="head"><div class="art general" id="art"></div><div class="title"><h2 id="title">Complete discography</h2><p>SIENNA SPIRO <span id="edition">ALL RELEASES</span></p></div><div class="metrics"><div class="metric"><small>Total streams</small><b id="totalMetric"></b></div><div class="metric"><small>Daily streams</small><b id="dailyMetric"></b></div><div class="metric"><small>Daily change</small><b id="changeMetric"></b></div></div></div><p class="note">“Change” compares 24 Aug daily streams with 23 Aug daily streams. Totals are as of 24 Aug 2026.</p><div class="tablewrap"><table><thead><tr><th>#</th><th>Song title</th><th>Streams</th><th>Daily</th><th>Change</th><th>%</th></tr></thead><tbody id="rows"></tbody></table></div></section></main><footer class="shell" id="credits"><span>© <span id="year"></span> siennaupdatehq · Data date: 24 Aug 2026.</span><div class="social"><a target="_blank" href="https://www.instagram.com/siennaupdatehq">Instagram</a><a target="_blank" href="https://www.tiktok.com/@siennaupdatehq">TikTok</a><a target="_blank" href="https://www.threads.com/@siennaupdatehq">Threads</a><a target="_blank" href="https://x.com/siennaupdatehq">X</a></div></footer><script>
+<section class="tabs" id="archive"><button class="tab active" data-view="general"><small>VIEW 01</small><b>General</b></button><button class="tab" data-view="visitor"><small>VIEW 02 · ALBUM</small><b>VISITOR (DELUXE)</b></button><button class="tab" data-view="sink"><small>VIEW 03 · EP</small><b>SINK NOW, SWIM LATER</b></button></section><section class="card"><div class="head"><div class="art general" id="art"></div><div class="title"><h2 id="title">Complete discography</h2><p>SIENNA SPIRO <span id="edition">ALL RELEASES</span></p></div><div class="metrics"><div class="metric"><small>Total streams</small><b id="totalMetric"></b></div><div class="metric"><small>Daily streams</small><b id="dailyMetric"></b></div><div class="metric"><small>Daily change</small><b id="changeMetric"></b></div></div></div><p class="note">“Change” compares 24 Aug daily streams with 23 Aug daily streams. Totals are as of 24 Aug 2026.</p><div class="tablewrap"><table><thead><tr><th>#</th><th>Song title</th><th>Streams</th><th>Daily</th><th>Change</th><th>%</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="song-snapshot" id="songSnapshot" aria-live="polite">
+  <div class="snapshot-grid">
+    <div class="snapshot-art" id="snapshotArt"></div>
+    <div class="snapshot-copy">
+      <h3 id="snapshotTitle">Select a song</h3>
+      <p id="snapshotRelease">Compact statistics · tap a song title</p>
+    </div>
+    <button class="snapshot-close" id="snapshotClose" type="button" aria-label="Close song snapshot">×</button>
+  </div>
+  <div class="snapshot-stats">
+    <div class="snapshot-stat"><small>Total streams</small><b id="snapshotTotal">—</b></div>
+    <div class="snapshot-stat"><small>Daily streams</small><b id="snapshotDaily">—</b></div>
+    <div class="snapshot-stat"><small>Daily change</small><b id="snapshotChange">—</b></div>
+    <div class="snapshot-stat"><small>% change</small><b id="snapshotPercent">—</b></div>
+  </div>
+  <p class="snapshot-tip">Screenshot-friendly view · click another song to switch</p>
+</div>
+</section></main><footer class="shell" id="credits"><span>© <span id="year"></span> siennaupdatehq · Data date: 24 Aug 2026.</span><div class="social"><a target="_blank" href="https://www.instagram.com/siennaupdatehq">Instagram</a><a target="_blank" href="https://www.tiktok.com/@siennaupdatehq">TikTok</a><a target="_blank" href="https://www.threads.com/@siennaupdatehq">Threads</a><a target="_blank" href="https://x.com/siennaupdatehq">X</a></div></footer><script>
 document.head.insertAdjacentHTML('beforeend','<style>body.general{--bg:#d4a5ac;--card:#e9c2c8;--table:#fff9f6;--ink:#392c35;--mute:#7e646e;--accent:#7d9aae;--accent2:#ad7489;--pos:#3a775f;--neg:#b94e64;--line:#392c3540;--shadow:#725261}.hero{grid-template-columns:1fr 180px auto!important}.hero-portrait{width:180px;height:180px;align-self:end;border:3px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 var(--shadow);background:#e9c2c8 center/cover no-repeat}.archive-title{font:10px DM Mono,monospace;letter-spacing:1.1px;color:var(--accent2);margin:0 0 10px;text-transform:uppercase}.card{border:3px solid var(--ink)!important;box-shadow:12px 12px 0 var(--shadow)!important}.art{overflow:hidden!important;border:3px solid var(--ink)!important;background-position:center!important;background-repeat:no-repeat!important;background-size:cover!important}.metric{border:2px solid var(--ink)!important;box-shadow:3px 3px 0 var(--shadow)!important}.tablewrap{border:3px solid var(--ink)!important;box-shadow:6px 6px 0 var(--shadow)!important}th{border-bottom:2px solid var(--ink)!important}.title h2{text-transform:uppercase}@media(max-width:800px){.hero{grid-template-columns:1fr!important}.hero-portrait{width:140px;height:140px;order:-1}}</style>');
 /* ARTWORK BASE64 — paste one image per release below.
    You can paste either a full data URI or only the Base64 string.
@@ -193,9 +296,38 @@ document.querySelector('.hero').children[0].insertAdjacentHTML('afterend','<div 
 /* title, 23 Aug total, 24 Aug total, 23 Aug daily, 24 Aug daily */
 const tracks=[['Die On This Hill',584579749,585969990,1260843,1390241],['You Stole The Show',199815753,200354879,464511,539126],['MAYBE.',184634267,184982700,292547,348433],['The Visitor',153371441,154082352,630261,710911],['Material Lover - from The Devil Wears Prada 2 Original Motion Picture',104320529,105139344,750857,818815],['Great Expectation',73564872,75369262,1542564,1804390],['BACK TO BLONDE',45828375,45968308,121473,139933],['Pure',36328986,37418966,913207,1089980],['NEED ME',32312194,32390773,67354,78579],['Dream Police',24806586,24887333,67014,80747],['Die On This Hill - At KOKO',24161980,24191689,25080,29709],['TAXI DRIVER',16747961,16786617,32862,38656],["He's Not My Baby, I'm His",15226378,15476278,203516,249900],['BUTTERFLY EFFECT',15190448,15224068,28646,33620],["I DON'T HATE YOU",11457646,11497778,35876,40132],["We're Not In Love",10826866,11007534,147319,180668],['This Is My House',8998513,9141816,118675,143303],['ORIGAMI',9019970,9053721,26837,33751],['Time, You & Me',8110972,8244693,108257,133721],['CYANIDE',7484139,7510122,22217,25983],["Ain't No Way - Live at KOKO",7120282,7153545,28961,33263],['Mono No Aware',5975486,6058912,69203,83426],['Die On This Hill - Unplugged',5276061,5392223,88324,116162],['You Stole The Show - Revisited',4521073,4615103,75221,94030],['Dream Police - A COLORS SHOW',4309513,4319194,7403,9681],['MAYBE. (Live from The Mews)',4086806,4081536,9225,0],['Autumn Leaves',3563588,3612637,42401,49049]];
 const album=['This Is My House',"We're Not In Love",'Great Expectation','Die On This Hill',"He's Not My Baby, I'm His",'Pure','The Visitor','Time, You & Me','You Stole The Show','Mono No Aware','MAYBE.','Material Lover - from The Devil Wears Prada 2 Original Motion Picture','Autumn Leaves','You Stole The Show - Revisited','Die On This Hill - Unplugged'],ep=['BUTTERFLY EFFECT','NEED ME',"I DON'T HATE YOU",'TAXI DRIVER','MAYBE.','BACK TO BLONDE','ORIGAMI','CYANIDE'],meta={general:['Complete discography','ALL RELEASES'],visitor:['VISITOR (DELUXE)','DELUXE ALBUM · 15 TRACKS'],sink:['SINK NOW, SWIM LATER','EP · 8 TRACKS']};const fmt=n=>new Intl.NumberFormat('en-US').format(n),sgn=n=>(n>0?'+':'')+fmt(n),cls=n=>n>=0?'positive':'negative';
-function row(t,n,z){let d=t[4]-t[3],p=d/t[3]*100;return '<tr class="'+(z?'totalrow':'')+'"><td class="rank">'+n+'</td><td class="track">'+t[0]+'</td><td class="total">'+fmt(t[2])+'</td><td class="daily">'+sgn(t[4])+'</td><td class="'+cls(d)+'">'+sgn(d)+'</td><td class="'+cls(d)+'">'+(p>0?'+':'')+p.toFixed(2)+'%</td></tr>'}
+function row(t,n,z){let d=t[4]-t[3],p=t[3]?d/t[3]*100:0;let title=z?'TOTAL':'<button class="track-button" type="button" data-track="'+encodeURIComponent(t[0])+'">'+t[0]+'</button>';return '<tr class="'+(z?'totalrow':'')+'"><td class="rank">'+n+'</td><td class="track">'+title+'</td><td class="total">'+fmt(t[2])+'</td><td class="daily">'+sgn(t[4])+'</td><td class="'+cls(d)+'">'+sgn(d)+'</td><td class="'+cls(d)+'">'+(p>0?'+':'')+p.toFixed(2)+'%</td></tr>'}
 function artworkSource(value){if(!value||value.startsWith('PASTE_'))return '';let clean=value.trim();if(clean.startsWith('url('))clean=clean.replace(/^url\(['"]?|['"]?\)$/g,'');if(clean.startsWith('data:image/')||clean.startsWith('http://')||clean.startsWith('https://')||/\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(clean))return clean;clean=clean.replace(/\s/g,'');let mime=clean.startsWith('iVBORw')?'image/png':clean.startsWith('R0lGOD')?'image/gif':clean.startsWith('UklGR')?'image/webp':'image/jpeg';return 'data:'+mime+';base64,'+clean}
 function updateTabFavicon(view){let source=artworkSource(artwork[view]);if(!source)return;let old=document.querySelector('#tabFavicon'),icon=document.createElement('link');icon.id='tabFavicon';icon.rel='icon';icon.type=source.includes('image/png')?'image/png':source.includes('image/webp')?'image/webp':'image/jpeg';icon.href=source+(source.startsWith('data:')?'#':'?')+'view='+view+'&v='+Date.now();old.replaceWith(icon)}
 function draw(view){let list=view==='general'?tracks:(view==='visitor'?album:ep).map(name=>tracks.find(t=>t[0]===name)).filter(Boolean),m=meta[view],oldT=list.reduce((a,t)=>a+t[1],0),tot=list.reduce((a,t)=>a+t[2],0),oldD=list.reduce((a,t)=>a+t[3],0),day=list.reduce((a,t)=>a+t[4],0),d=day-oldD,p=d/oldD*100;document.body.className=view;document.querySelector('#title').textContent=m[0];document.querySelector('#edition').textContent=m[1];let art=document.querySelector('#art');art.className='art '+view;let cover=artworkSource(artwork[view]);art.style.backgroundImage=cover?'url("'+cover+'")':'';updateTabFavicon(view);let heroCover=artworkSource(artwork.general);document.querySelector('#heroArtwork').style.backgroundImage=heroCover?'url("'+heroCover+'")':'';document.querySelector('#totalMetric').textContent=fmt(tot);document.querySelector('#dailyMetric').textContent=sgn(day);let cm=document.querySelector('#changeMetric');cm.textContent=sgn(d)+' · '+(p>0?'+':'')+p.toFixed(2)+'%';cm.className=cls(d);document.querySelector('#rows').innerHTML=list.map((t,i)=>row(t,i+1,false)).join('')+row(['TOTAL',oldT,tot,oldD,day],'',true);document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));document.title='siennaupdatehq — '+m[0]}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>draw(b.dataset.view));document.querySelector('#year').textContent=new Date().getFullYear();draw('general');
+function openSnapshot(encodedName){
+  const name=decodeURIComponent(encodedName);
+  const view=document.body.className;
+  const list=view==='general'?tracks:(view==='visitor'?album:ep).map(name=>tracks.find(t=>t[0]===name)).filter(Boolean);
+  const t=list.find(x=>x[0]===name);
+  if(!t)return;
+  const d=t[4]-t[3],p=t[3]?d/t[3]*100:0;
+  const snap=document.querySelector('#songSnapshot');
+  const source=artworkSource(artwork[view]);
+  document.querySelector('#snapshotArt').style.backgroundImage=source?'url("'+source+'")':'';
+  document.querySelector('#snapshotTitle').textContent=t[0];
+  document.querySelector('#snapshotRelease').textContent=meta[view][0]+' · '+meta[view][1];
+  document.querySelector('#snapshotTotal').textContent=fmt(t[2]);
+  document.querySelector('#snapshotDaily').textContent=sgn(t[4]);
+  const change=document.querySelector('#snapshotChange');
+  change.textContent=sgn(d);
+  change.className=cls(d);
+  const percent=document.querySelector('#snapshotPercent');
+  percent.textContent=(p>0?'+':'')+p.toFixed(2)+'%';
+  percent.className=cls(d);
+  snap.classList.add('open');
+  snap.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.track-button');
+  if(btn){openSnapshot(btn.dataset.track);}
+  if(e.target.closest('#snapshotClose'))document.querySelector('#songSnapshot').classList.remove('open');
+});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelector('#songSnapshot').classList.remove('open');draw(b.dataset.view)});
+document.querySelector('#year').textContent=new Date().getFullYear();draw('general');
 </script></body></html>
