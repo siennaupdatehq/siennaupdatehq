@@ -1,0 +1,133 @@
+name: Email subscribers when streaming stats change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - index.html
+
+permissions:
+  contents: read
+
+concurrency:
+  group: streaming-email-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  notify-subscribers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect actual streaming-stat changes
+        id: detect
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import re
+          import subprocess
+          from datetime import datetime
+          from pathlib import Path
+
+          current = Path("index.html").read_text(encoding="utf-8")
+          base_sha = os.environ.get("BASE_SHA", "")
+          try:
+              if not base_sha or set(base_sha) == {"0"}:
+                  raise subprocess.CalledProcessError(1, ["git", "show"])
+              previous = subprocess.check_output(
+                  ["git", "show", f"{base_sha}:index.html"], text=True, encoding="utf-8"
+              )
+          except subprocess.CalledProcessError:
+              print("No previous index.html to compare; skipping notification.")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+                  f.write("should_send=false\n")
+              raise SystemExit(0)
+
+          # Compare only data declarations, not CSS, layout, copy or other code.
+          patterns = [
+              r"const tracks=(.*?);const liveRoomTracks=",
+              r"const liveRoomTracks=(.*?);const album=",
+              r"const aggregateTotals=(\{[^}]+\}),aggregateDaily=(\{[^}]+\}),aggregatePreviousDaily=(\{[^}]+\})",
+          ]
+
+          changed = False
+          for pattern in patterns:
+              old_match = re.search(pattern, previous, re.S)
+              new_match = re.search(pattern, current, re.S)
+              if not old_match or not new_match:
+                  raise SystemExit("Could not locate streaming data blocks in index.html.")
+              if old_match.group(0) != new_match.group(0):
+                  changed = True
+
+          if not changed:
+              print("No streaming-stat values changed; no email will be sent.")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+                  f.write("should_send=false\n")
+              raise SystemExit(0)
+
+          date_match = re.search(
+              r"DATA CURRENT THROUGH\s+(\d{1,2}\s+[A-Z]{3}\s+\d{4})", current
+          )
+          if not date_match:
+              raise SystemExit("Could not find DATA CURRENT THROUGH date in index.html.")
+
+          update_date = datetime.strptime(date_match.group(1), "%d %b %Y").strftime("%d %B %Y")
+          summary = (
+              "New Spotify streaming figures are now available for the complete "
+              "discography, VISITOR (DELUXE), and SINK NOW, SWIM LATER."
+          )
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write("should_send=true\n")
+              output.write(f"update_date={update_date}\n")
+              output.write(f"update_summary={summary}\n")
+          print(f"Streaming statistics changed. Preparing notification dated {update_date}.")
+          PY
+
+      - name: Send update email through Google Apps Script
+        if: steps.detect.outputs.should_send == 'true'
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_WEB_APP_URL }}
+          WEBHOOK_SECRET: ${{ secrets.STREAM_NOTIFICATION_SECRET }}
+          COMMIT_SHA: ${{ github.sha }}
+          UPDATE_DATE: ${{ steps.detect.outputs.update_date }}
+          UPDATE_SUMMARY: ${{ steps.detect.outputs.update_summary }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$APPS_SCRIPT_URL" || -z "$WEBHOOK_SECRET" ]]; then
+            echo "Missing GitHub Actions secrets: APPS_SCRIPT_WEB_APP_URL and/or STREAM_NOTIFICATION_SECRET."
+            exit 1
+          fi
+
+          payload="$(python3 - <<'PY'
+          import json, os
+          print(json.dumps({
+              "action": "publishUpdate",
+              "secret": os.environ["WEBHOOK_SECRET"],
+              "commit": os.environ["COMMIT_SHA"],
+              "date": os.environ["UPDATE_DATE"],
+              "summary": os.environ["UPDATE_SUMMARY"],
+          }))
+          PY
+          )"
+
+          response="$(curl --silent --show-error --location --retry 3 \
+            --header "Content-Type: application/json" \
+            --data "$payload" \
+            "$APPS_SCRIPT_URL")"
+
+          echo "$response"
+          if ! echo "$response" | grep -q '"ok":true'; then
+            echo "Google Apps Script did not confirm the notification request."
+            exit 1
+          fi
